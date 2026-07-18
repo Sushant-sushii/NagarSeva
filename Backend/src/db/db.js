@@ -12,7 +12,7 @@ async function connectDB(){
 
     try{
         await mongoose.connect(mongoUri,{
-            dbName: 'Mars'
+            dbName: 'Sky'
         });
         console.log("Connected to MongoDB");
     }
