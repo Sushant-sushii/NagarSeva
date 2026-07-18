@@ -87,10 +87,10 @@ const validateLogin = (req, res, next) => {
 };
 
 const validateUpdate = (req, res, next) => {
-    const { firstName, LastName, wardNumber, department } = req.body;
+    const { firstName, LastName, department } = req.body;
 
     // At least one field must be provided
-    if (!firstName && !LastName && !wardNumber && !department) {
+    if (!firstName && !LastName && !department) {
         return res.status(400).json({
             success: false,
             message: "At least one field must be provided for update"

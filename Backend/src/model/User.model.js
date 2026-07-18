@@ -29,10 +29,7 @@ const UserSchema = new mongoose.Schema({
     default:'null'
 
     }, // Used if role is Official (e.g., 'Electrical')
-  wardNumber: 
-  { type: String,
-    required:true
-   } // Used if role is Official
+ // Used if role is Official
 }, { timestamps: true });
 
 const userModel=mongoose.model('User', UserSchema);

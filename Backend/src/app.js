@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.routes');
+const complainRoutes = require('./routes/complain.routes');
 const errorHandler = require('./middleware/errorHandler.middleware');
 
 const app = express();
@@ -38,6 +39,17 @@ app.get('/', (req, res) => {
         updateProfile: "PUT /api/auth/profile",
         logout: "POST /api/auth/logout"
       },
+      complaints: {
+        create: "POST /api/complains/create",
+        getAll: "GET /api/complains",
+        getById: "GET /api/complains/:id",
+        getByUserId: "GET /api/complains/user/:userId",
+        getNearby: "GET /api/complains/nearby/:latitude/:longitude/:radius",
+        updateStatus: "PUT /api/complains/:id/status",
+        update: "PUT /api/complains/:id",
+        delete: "DELETE /api/complains/:id",
+        getStats: "GET /api/complains/stats/:wardNumber"
+      },
       health: "GET /health"
     }
   });
@@ -53,6 +65,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/complains', complainRoutes);
 
 // 404 handler
 app.use((req, res) => {
