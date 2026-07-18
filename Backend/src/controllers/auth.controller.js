@@ -14,13 +14,29 @@ const generateToken = (userId, role) => {
 // Register User
 async function registerUser(req, res) {
     try {
-        const { firstName, LastName, email, password, role = 'citizen', wardNumber, department } = req.body;
+        const { firstName, LastName, email, password, role = 'citizen', wardLocation, department } = req.body;
+        const normalizedRole = role.toLowerCase();
 
-        // Validate required fields
-        if (!firstName || !LastName || !email || !password || !wardNumber) {
+        // 1. Validate universal baseline fields
+        if (!firstName || !LastName || !email || !password || !role) {
             return res.status(400).json({
                 success: false,
-                message: "All required fields must be provided"
+                message: "All required core fields must be provided"
+            });
+        }
+
+        // 2. Validate conditional fields based on role selection
+        if (normalizedRole === 'citizen' && !wardLocation) {
+            return res.status(400).json({
+                success: false,
+                message: "Ward Location is required for Citizen registration"
+            });
+        }
+
+        if (normalizedRole === 'official' && !department) {
+            return res.status(400).json({
+                success: false,
+                message: "Department selection is required for Official registration"
             });
         }
 
@@ -53,15 +69,15 @@ async function registerUser(req, res) {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user
+        // Create new user mapped by normalized role profile attributes
         const newUser = new userModel({
             firstName,
             LastName,
             email,
             password: hashedPassword,
-            role: role.toLowerCase(),
-            wardNumber,
-            department: role.toLowerCase() === 'official' ? department : null
+            role: normalizedRole,
+            wardLocation: normalizedRole === 'citizen' ? wardLocation : null,
+            department: normalizedRole === 'official' ? department : null
         });
 
         await newUser.save();
@@ -77,7 +93,7 @@ async function registerUser(req, res) {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
         });
 
-        // Return success response
+        // Return success response including both wardLocation and department
         res.status(201).json({
             success: true,
             message: "User registered successfully",
@@ -88,7 +104,8 @@ async function registerUser(req, res) {
                 LastName: newUser.LastName,
                 email: newUser.email,
                 role: newUser.role,
-                wardNumber: newUser.wardNumber
+                wardLocation: newUser.wardLocation,
+                department: newUser.department
             }
         });
 
@@ -124,8 +141,8 @@ async function loginUser(req, res) {
             });
         }
 
-        // Compare passwords
-        const isPasswordValid = await bcrypt.compare(password, user.password,user.hashedPassword);
+        // Compare passwords (fixed extra parameters)
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
@@ -133,8 +150,8 @@ async function loginUser(req, res) {
             });
         }
 
-        // Generate token
-        const token = generateToken(user._id, user.role,user.hashedPassword);
+        // Generate token (fixed extra parameters)
+        const token = generateToken(user._id, user.role);
 
         // Set HTTP-only cookie with token for persistent login (7 days)
         res.cookie('authToken', token, {
@@ -144,7 +161,7 @@ async function loginUser(req, res) {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
         });
 
-        // Return success response
+        // Return success response with complete metadata mapping
         res.status(200).json({
             success: true,
             message: "Login successful",
@@ -155,7 +172,8 @@ async function loginUser(req, res) {
                 LastName: user.LastName,
                 email: user.email,
                 role: user.role,
-                wardNumber: user.wardNumber
+                wardLocation: user.wardLocation,
+                department: user.department
             }
         });
 
@@ -209,7 +227,7 @@ async function getUserProfile(req, res) {
 async function updateUserProfile(req, res) {
     try {
         const userId = req.user?.userId;
-        const { firstName, LastName, wardNumber, department } = req.body;
+        const { firstName, LastName, wardLocation, department } = req.body;
 
         if (!userId) {
             return res.status(401).json({
@@ -221,7 +239,7 @@ async function updateUserProfile(req, res) {
         const updateData = {};
         if (firstName) updateData.firstName = firstName;
         if (LastName) updateData.LastName = LastName;
-        if (wardNumber) updateData.wardNumber = wardNumber;
+        if (wardLocation) updateData.wardLocation = wardLocation;
         if (department) updateData.department = department;
 
         const updatedUser = await userModel.findByIdAndUpdate(

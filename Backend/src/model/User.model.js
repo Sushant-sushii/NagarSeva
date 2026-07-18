@@ -24,6 +24,10 @@ const UserSchema = new mongoose.Schema({
      enum: ['citizen', 'official'],
       default: 'Citizen'
      },
+     wardLocation:{
+      type: String,
+      required: true
+     },
   department:
    { type: String,
     default:'null'

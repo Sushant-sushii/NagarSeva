@@ -1,17 +1,17 @@
 // Validation middleware for auth routes
 
 const validateRegister = (req, res, next) => {
-    const { firstName, LastName, email, password, wardNumber } = req.body;
+    const { firstName, LastName, email, password, role, wardLocation, department } = req.body;
 
-    // Check required fields
-    if (!firstName || !LastName || !email || !password || !wardNumber) {
+    // 1. Check baseline universal required fields
+    if (!firstName || !LastName || !email || !password || !role) {
         return res.status(400).json({
             success: false,
-            message: "Missing required fields: firstName, LastName, email, password, wardNumber"
+            message: "Missing required fields: firstName, LastName, email, password, and role"
         });
     }
 
-    // Validate firstName
+    // 2. Validate firstName
     if (typeof firstName !== 'string' || firstName.trim().length < 2) {
         return res.status(400).json({
             success: false,
@@ -19,7 +19,7 @@ const validateRegister = (req, res, next) => {
         });
     }
 
-    // Validate LastName
+    // 3. Validate LastName
     if (typeof LastName !== 'string' || LastName.trim().length < 2) {
         return res.status(400).json({
             success: false,
@@ -27,7 +27,7 @@ const validateRegister = (req, res, next) => {
         });
     }
 
-    // Validate email
+    // 4. Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({
@@ -36,7 +36,7 @@ const validateRegister = (req, res, next) => {
         });
     }
 
-    // Validate password
+    // 5. Validate password
     if (typeof password !== 'string' || password.length < 6) {
         return res.status(400).json({
             success: false,
@@ -44,11 +44,25 @@ const validateRegister = (req, res, next) => {
         });
     }
 
-    // Validate wardNumber
-    if (typeof wardNumber !== 'string' || wardNumber.trim().length < 1) {
+    // 6. Role-Specific Validation (Fixes the Official signup error)
+    if (role === 'citizen') {
+        if (!wardLocation || typeof wardLocation !== 'string' || wardLocation.trim().length < 1) {
+            return res.status(400).json({
+                success: false,
+                message: "Ward Location is required for Citizen accounts"
+            });
+        }
+    } else if (role === 'official') {
+        if (!department || typeof department !== 'string' || department.trim().length < 1) {
+            return res.status(400).json({
+                success: false,
+                message: "Department selection is required for Official accounts"
+            });
+        }
+    } else {
         return res.status(400).json({
             success: false,
-            message: "Ward number is required"
+            message: "Invalid role specified. Must be 'citizen' or 'official'"
         });
     }
 
@@ -87,10 +101,11 @@ const validateLogin = (req, res, next) => {
 };
 
 const validateUpdate = (req, res, next) => {
-    const { firstName, LastName, department } = req.body;
+    // Destructured wardLocation here to avoid a "wardLocation is not defined" reference error
+    const { firstName, LastName, wardLocation, department } = req.body;
 
     // At least one field must be provided
-    if (!firstName && !LastName && !department) {
+    if (!firstName && !LastName && !wardLocation && !department) {
         return res.status(400).json({
             success: false,
             message: "At least one field must be provided for update"
@@ -113,11 +128,19 @@ const validateUpdate = (req, res, next) => {
         });
     }
 
-    // Validate wardNumber if provided
-    if (wardNumber && (typeof wardNumber !== 'string' || wardNumber.trim().length < 1)) {
+    // Validate wardLocation if provided
+    if (wardLocation && (typeof wardLocation !== 'string' || wardLocation.trim().length < 1)) {
         return res.status(400).json({
             success: false,
-            message: "Ward number must be valid"
+            message: "Ward location must be valid"
+        });
+    }
+
+    // Validate department if provided
+    if (department && (typeof department !== 'string' || department.trim().length < 1)) {
+        return res.status(400).json({
+            success: false,
+            message: "Department description must be valid"
         });
     }
 
