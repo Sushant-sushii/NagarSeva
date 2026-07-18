@@ -57,11 +57,11 @@ const SignUp = () => {
       return false;
     }
     
-    // Role-based local frontend validation
-    if (role === 'citizen' && !wardLocation.trim()) {
+    if (!wardLocation.trim()) {
       setLocalError('Please enter or detect your Ward Location.');
       return false;
     }
+
     if (role === 'official' && !department) {
       setLocalError('Please select your department.');
       return false;
@@ -92,14 +92,14 @@ const SignUp = () => {
     }
 
     try {
-      // FIX: Always include both properties to satisfy backend middleware checks
+      // ⚙️ FIX: Using capital 'LastName' to match the backend validator rule exactly
       const userData = {
         firstName: firstName.trim(),
-        LastName: lastName.trim(), // Capital 'L' to strictly match backend
+        LastName: lastName.trim(), 
         email: email.trim(),
         password: password,
         role: role.toLowerCase(),
-        wardLocation: role === 'citizen' ? wardLocation.trim() : "",
+        wardLocation: wardLocation.trim(),
         department: role === 'official' ? department : ""
       };
       
@@ -212,29 +212,27 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* Ward Location Field (Citizen only) */}
-            {role === 'citizen' && (
-              <div className="animate-fadeIn">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Ward Location</label>
-                <div className="relative flex items-center">
-                  <input
-                    type="text"
-                    value={wardLocation}
-                    onChange={(e) => setWardLocation(e.target.value)}
-                    placeholder="Enter locality / ward name or detect"
-                    className="w-full pl-4 pr-32 py-3 bg-slate-700 border-2 border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
-                  />
-                  <button
-                    type="button"
-                    disabled={isLocating}
-                    onClick={handleDetectLocation}
-                    className="absolute right-2 px-3 py-1.5 bg-slate-600 hover:bg-slate-500 disabled:bg-slate-800 disabled:text-gray-600 text-amber-400 text-xs font-semibold rounded transition-colors"
-                  >
-                    {isLocating ? 'Locating...' : '🎯 Detect'}
-                  </button>
-                </div>
+            {/* Ward Location Input */}
+            <div className="animate-fadeIn">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Ward Location</label>
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={wardLocation}
+                  onChange={(e) => setWardLocation(e.target.value)}
+                  placeholder="Enter locality / ward name or detect"
+                  className="w-full pl-4 pr-32 py-3 bg-slate-700 border-2 border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 transition-all"
+                />
+                <button
+                  type="button"
+                  disabled={isLocating}
+                  onClick={handleDetectLocation}
+                  className="absolute right-2 px-3 py-1.5 bg-slate-600 hover:bg-slate-500 disabled:bg-slate-800 disabled:text-gray-600 text-amber-400 text-xs font-semibold rounded transition-colors"
+                >
+                  {isLocating ? 'Locating...' : '🎯 Detect'}
+                </button>
               </div>
-            )}
+            </div>
 
             {/* Department Selector Dropdown (Official only) */}
             {role === 'official' && (

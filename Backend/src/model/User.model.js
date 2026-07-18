@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
      },
      wardLocation:{
       type: String,
-      required: true
+      default:'null'
      },
   department:
    { type: String,

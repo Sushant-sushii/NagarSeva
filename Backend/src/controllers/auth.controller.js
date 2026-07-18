@@ -26,6 +26,7 @@ async function registerUser(req, res) {
         }
 
         // 2. Validate conditional fields based on role selection
+        // Citizens strictly require a location context
         if (normalizedRole === 'citizen' && !wardLocation) {
             return res.status(400).json({
                 success: false,
@@ -33,6 +34,7 @@ async function registerUser(req, res) {
             });
         }
 
+        // Officials require a department
         if (normalizedRole === 'official' && !department) {
             return res.status(400).json({
                 success: false,
@@ -76,7 +78,8 @@ async function registerUser(req, res) {
             email,
             password: hashedPassword,
             role: normalizedRole,
-            wardLocation: normalizedRole === 'citizen' ? wardLocation : null,
+            // 🎯 FIXED: Always save the wardLocation if provided, instead of forcing null for officials
+            wardLocation: wardLocation || null, 
             department: normalizedRole === 'official' ? department : null
         });
 
@@ -141,7 +144,7 @@ async function loginUser(req, res) {
             });
         }
 
-        // Compare passwords (fixed extra parameters)
+        // Compare passwords
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({
@@ -150,7 +153,7 @@ async function loginUser(req, res) {
             });
         }
 
-        // Generate token (fixed extra parameters)
+        // Generate token
         const token = generateToken(user._id, user.role);
 
         // Set HTTP-only cookie with token for persistent login (7 days)
