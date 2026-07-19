@@ -22,6 +22,10 @@ const ComplainSchema = new mongoose.Schema({
   },
   
   // Automated sorting fields populated by the Gemini AI Agent
+  description: {
+    type: String,
+    required: true
+  },
   category: { 
     type: String, 
     required: true // e.g., 'Streetlight Out', 'Blocked Drain', 'Illegal Dumping', 'Encroachment'
@@ -58,15 +62,20 @@ const ComplainSchema = new mongoose.Schema({
     type: String, 
     required: true // Used to group statistics on the public Ward Dashboard (e.g., "Ward A")
   },
+  localArea: {
+    type: String
+  },
   resolvedAt: { 
     type: Date // Populated manually when an official resolves the ticket to calculate response times
+  },
+  resolutionStatement: {
+    type: String,
+    default: ''
   }
 }, { 
   // Automatically creates and manages 'createdAt' and 'updatedAt' timestamps!
   timestamps: true 
 });
 
-// Create a 2dsphere index for lightning-fast geospatial radius queries 
-ComplainSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Complain', ComplainSchema);

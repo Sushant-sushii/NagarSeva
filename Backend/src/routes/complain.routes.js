@@ -33,8 +33,18 @@ router.get('/stats/:wardNumber', getComplaintStats);
  * Protected routes (authentication required)
  */
 
+const { upload, uploadToImageKit } = require('../middleware/imageUpload.middleware');
+
 // POST create new complaint (citizen)
 router.post('/create', authMiddleware, createComplaint);
+
+// POST upload image (citizen)
+router.post('/upload-image', authMiddleware, upload, uploadToImageKit, (req, res) => {
+    return res.status(200).json({
+        success: true,
+        imageUrl: req.imageUrl
+    });
+});
 
 // GET complaints filed by specific user
 router.get('/user/:userId', authMiddleware, getComplaintsByUserId);

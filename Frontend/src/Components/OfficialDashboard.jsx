@@ -2,6 +2,8 @@ import React from 'react';
 import TopBar from './Dashboard/TopBar';
 import WardAnalytics from './Dashboard/WardAnalytics';
 import OfficialComplaints from './Dashboard/OfficialComplaints';
+import TotalComplaints from './Dashboard/TotalComplaints';
+import Announcements from './Dashboard/Announcements';
 
 export default function OfficialDashboard({ user, activeTab, setActiveTab }) {
   const renderContent = () => {
@@ -9,17 +11,11 @@ export default function OfficialDashboard({ user, activeTab, setActiveTab }) {
       case 'dashboard':
         return <WardAnalytics />;
       case 'complaints':
-        return <OfficialComplaints />;
+        return <OfficialComplaints user={user} />;
       case 'total-complaints':
-        return (
-          <div className="space-y-4">
-            <h2 className="font-display text-3xl font-bold text-white uppercase">Total Complaints Hub</h2>
-            <p className="text-slate-400 text-sm">Comprehensive multi-ward operational aggregates view.</p>
-            <div className="p-8 border border-slate-800 rounded-xl bg-[#0b1329]/20 text-center text-slate-500 font-mono text-xs">
-              [SLA Compliance Core Engine Operational]
-            </div>
-          </div>
-        );
+        return <TotalComplaints user={user} />;
+      case 'announcements':
+        return <Announcements user={user} />;
       case 'safety-map':
       case 'safe-routes':
         return (

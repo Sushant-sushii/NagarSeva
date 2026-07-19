@@ -1,16 +1,25 @@
 import React from 'react';
 import TopBar from './Dashboard/TopBar';
 import ReportIssue from './Dashboard/ReportIssue';
+import Track from './Dashboard/Track';
+import SafetyMap from './Dashboard/SafetyMap';
+import SafeRoutes from './Dashboard/SafeRoutes';
+import Announcements from './Dashboard/Announcements';
 
 export default function CitizenDashboard({ user, activeTab, setActiveTab }) {
   // एक्टिव टैब के आधार पर पेज लोड करने का हेल्पर
   const renderContent = () => {
     switch (activeTab) {
       case 'report':
-        return <ReportIssue />;
+        return <ReportIssue setActiveTab={setActiveTab} />;
       case 'track':
+        return <Track setActiveTab={setActiveTab} />;
+      case 'announcements':
+        return <Announcements user={user} />;
       case 'safety-map':
+        return <SafetyMap />;
       case 'safe-routes':
+        return <SafeRoutes />;
       case 'dashboard':
         return (
           <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-2">

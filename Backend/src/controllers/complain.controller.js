@@ -9,13 +9,13 @@ const userModel = require('../model/User.model');
 async function createComplaint(req, res) {
     try {
         const userId = req.user?.userId;
-        const { location, category, department, severity, wardNumber, imageUrl, isSafetyHazardAtNight } = req.body;
+        const { location, category, department, severity, wardNumber, imageUrl, isSafetyHazardAtNight, description, localArea } = req.body;
 
         // Validate required fields
-        if (!location || !category || !department || !wardNumber) {
+        if (!location || !category || !department || !wardNumber || !description) {
             return res.status(400).json({
                 success: false,
-                message: "location, category, department, and wardNumber are required"
+                message: "location, category, department, wardNumber, and description are required"
             });
         }
 
@@ -43,6 +43,8 @@ async function createComplaint(req, res) {
             wardNumber,
             imageUrl: imageUrl || null,
             isSafetyHazardAtNight: isSafetyHazardAtNight || false,
+            description,
+            localArea: localArea || 'Unknown Area',
             status: 'Open'
         });
 
@@ -116,6 +118,14 @@ async function getAllComplaints(req, res) {
     try {
         const { status, category, department, wardNumber, severity, page = 1, limit = 10 } = req.query;
 
+        // Auto-escalation check: mark open complaints older than 15 days as escalated
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+        await Complain.updateMany(
+            { status: 'Open', createdAt: { $lt: fifteenDaysAgo } },
+            { $set: { status: 'Escalated' } }
+        );
+
         // Build filter object
         const filter = {};
         if (status) filter.status = status;
@@ -174,6 +184,14 @@ async function getComplaintsByUserId(req, res) {
                 message: "User ID is required"
             });
         }
+
+        // Auto-escalation check: mark open complaints older than 15 days as escalated
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+        await Complain.updateMany(
+            { status: 'Open', createdAt: { $lt: fifteenDaysAgo } },
+            { $set: { status: 'Escalated' } }
+        );
 
         // Calculate pagination
         const pageNum = parseInt(page) || 1;
@@ -274,7 +292,7 @@ async function getComplaintsNearLocation(req, res) {
 async function updateComplaintStatus(req, res) {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, resolutionStatement } = req.body;
 
         // Validate status
         const validStatuses = ['Open', 'Resolved', 'Escalated'];
@@ -287,9 +305,10 @@ async function updateComplaintStatus(req, res) {
 
         const updateData = { status };
 
-        // If resolving, set resolvedAt timestamp
+        // If resolving, set resolvedAt timestamp and resolutionStatement
         if (status === 'Resolved') {
             updateData.resolvedAt = new Date();
+            updateData.resolutionStatement = resolutionStatement || 'Resolved by official.';
         }
 
         const updatedComplaint = await Complain.findByIdAndUpdate(

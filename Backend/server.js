@@ -4,12 +4,14 @@ const connectDB = require('./src/db/db');
 
 const PORT = process.env.PORT || 3000;
 
+
 // Start server first (non-blocking)
 const server = app.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);
     console.log(`📍 API base URL: http://localhost:${PORT}`);
     console.log(`🔐 Auth routes available at: http://localhost:${PORT}/api/auth`);
 });
+
 
 // Try to connect to database asynchronously (don't block server startup)
 (async () => {

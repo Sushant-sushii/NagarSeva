@@ -9,6 +9,7 @@ export default function TopBar({ activeTab, setActiveTab }) {
   const citizenItems = [
     { id: 'report', label: 'Report Issue', icon: Plus },
     { id: 'track', label: 'Track', icon: Clock },
+    { id: 'announcements', label: 'Announcements', icon: Bell },
     { id: 'safety-map', label: 'Safety Map', icon: Shield },
     { id: 'safe-routes', label: 'Safe Routes', icon: Navigation },
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -17,6 +18,7 @@ export default function TopBar({ activeTab, setActiveTab }) {
   const officialItems = [
     { id: 'complaints', label: 'Complaints', icon: FileText },
     { id: 'total-complaints', label: 'Total Complaints', icon: Layers },
+    { id: 'announcements', label: 'Announcements', icon: Bell },
     { id: 'safety-map', label: 'Safety Map', icon: Shield },
     { id: 'safe-routes', label: 'Safe Routes', icon: Navigation },
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
