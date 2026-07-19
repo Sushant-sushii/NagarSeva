@@ -543,8 +543,8 @@ Return ONLY a valid JSON object matching this exact schema:
               <div className="flex flex-col justify-end">
                 <div className="border border-slate-800 bg-[#060A14]/30 rounded-xl p-3 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="font-mono text-xs uppercase text-slate-300 font-bold">Night Safety Vector</span>
-                    <span className="text-[10px] text-slate-500 font-mono">(`isSafetyHazardAtNight`)</span>
+                    <span className="font-mono text-xs uppercase text-slate-300 font-bold">Night Safety</span>
+                    <span className="text-[10px] text-slate-500 font-mono">(`Is Safety Hazard At Night`)</span>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" checked={isSafetyHazardAtNight} onChange={(e) => setIsSafetyHazardAtNight(e.target.checked)} className="sr-only peer" />
@@ -556,7 +556,7 @@ Return ONLY a valid JSON object matching this exact schema:
 
             <div className="pt-4 flex justify-end">
               <button type="submit" disabled={isSubmitting || isAnalyzingImage} className="w-full sm:w-48 py-3.5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-800 disabled:text-slate-600 text-black font-mono text-xs uppercase font-bold rounded-xl transition-all flex items-center justify-center gap-2">
-                {isSubmitting ? <Loader2 className="animate-spin text-black" size={16} /> : 'DISPATCH PACKET'}
+                {isSubmitting ? <Loader2 className="animate-spin text-black" size={16} /> : 'SUBMIT REPORT'}
               </button>
             </div>
           </form>
