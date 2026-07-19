@@ -5,6 +5,7 @@ import Track from './Dashboard/Track';
 import SafetyMap from './Dashboard/SafetyMap';
 import SafeRoutes from './Dashboard/SafeRoutes';
 import Announcements from './Dashboard/Announcements';
+import WardAnalytics from './Dashboard/WardAnalytics';
 
 export default function CitizenDashboard({ user, activeTab, setActiveTab }) {
   // एक्टिव टैब के आधार पर पेज लोड करने का हेल्पर
@@ -21,16 +22,7 @@ export default function CitizenDashboard({ user, activeTab, setActiveTab }) {
       case 'safe-routes':
         return <SafeRoutes />;
       case 'dashboard':
-        return (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-2">
-            <h3 className="text-xl font-bold font-display uppercase tracking-wider text-amber-500">
-              {activeTab.replace('-', ' ')} Layer Active
-            </h3>
-            <p className="text-sm text-slate-400 max-w-sm">
-              This node profile data is restricted or routing live under current configurations.
-            </p>
-          </div>
-        );
+        return <WardAnalytics />;
       default:
         return <ReportIssue />;
     }

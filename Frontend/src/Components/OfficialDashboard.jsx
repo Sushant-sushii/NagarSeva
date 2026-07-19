@@ -16,20 +16,8 @@ export default function OfficialDashboard({ user, activeTab, setActiveTab }) {
         return <TotalComplaints user={user} />;
       case 'announcements':
         return <Announcements user={user} />;
-      case 'safety-map':
-      case 'safe-routes':
-        return (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-2">
-            <h3 className="text-xl font-bold font-display uppercase tracking-wider text-amber-500">
-              Official: {activeTab.replace('-', ' ')}
-            </h3>
-            <p className="text-sm text-slate-400 max-w-sm">
-              Live mapping overlays running under agency clearance standard.
-            </p>
-          </div>
-        );
       default:
-        return <OfficialComplaints />;
+        return <OfficialComplaints user={user} />;
     }
   };
 

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#060A14"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect x="2" y="2" width="60" height="60" rx="14" ry="14" fill="url(#bg)" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.4"/>
+  <!-- Shield icon -->
+  <path d="M32 12 L46 20 L46 34 C46 42 40 49 32 52 C24 49 18 42 18 34 L18 20 Z" fill="none" stroke="url(#shield)" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Inner checkmark -->
+  <path d="M25 33 L30 38 L39 27" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Pulse dot -->
+  <circle cx="32" cy="44" r="2" fill="#10b981"/>
+</svg>

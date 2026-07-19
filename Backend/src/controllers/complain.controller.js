@@ -309,6 +309,14 @@ async function updateComplaintStatus(req, res) {
         if (status === 'Resolved') {
             updateData.resolvedAt = new Date();
             updateData.resolutionStatement = resolutionStatement || 'Resolved by official.';
+            
+            // Retrieve official user details to populate fields
+            if (req.user && req.user.userId) {
+                const official = await userModel.findById(req.user.userId);
+                if (official) {
+                    updateData.resolvedByOfficialName = `${official.firstName} ${official.LastName}`;
+                }
+            }
         }
 
         const updatedComplaint = await Complain.findByIdAndUpdate(

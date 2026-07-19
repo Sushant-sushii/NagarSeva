@@ -71,6 +71,10 @@ const ComplainSchema = new mongoose.Schema({
   resolutionStatement: {
     type: String,
     default: ''
+  },
+  resolvedByOfficialName: {
+    type: String,
+    default: ''
   }
 }, { 
   // Automatically creates and manages 'createdAt' and 'updatedAt' timestamps!

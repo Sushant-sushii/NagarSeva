@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
-import { Loader2, AlertCircle, FileText, CheckCircle, Flame, BarChart3, TrendingUp, Award, ShieldAlert, Sparkles, Activity, Clock, X } from 'lucide-react';
+import { Loader2, AlertCircle, FileText, CheckCircle, Flame, BarChart3, TrendingUp, Award, AwardIcon, ShieldAlert, Sparkles, HelpCircle, Activity } from 'lucide-react';
 
 const MUNICIPAL_DEPARTMENTS = [
   "Public Works Department (PWD) / Infrastructure",
@@ -11,7 +11,7 @@ const MUNICIPAL_DEPARTMENTS = [
   "Traffic & Street Light Management"
 ];
 
-export default function WardAnalytics() {
+export default function CommonDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -73,10 +73,14 @@ export default function WardAnalytics() {
     let totalResolutionMs = 0;
     let resolutionCountWithTime = 0;
 
+    // Severity mapping
     const severityMap = { High: 0, Medium: 0, Low: 0 };
-    const dailyMap = {};
-    const deptResolvedMap = {};
 
+    // Daily timeline grouping
+    const dailyMap = {};
+
+    // Department leaderboard mapping
+    const deptResolvedMap = {};
     MUNICIPAL_DEPARTMENTS.forEach(dept => {
       deptResolvedMap[dept] = { name: dept, total: 0, resolved: 0, open: 0, escalated: 0 };
     });
@@ -87,6 +91,7 @@ export default function WardAnalytics() {
       else if (status === 'Resolved') resolvedCount++;
       else if (status === 'Escalated') escalatedCount++;
 
+      // Resolution times average
       if (status === 'Resolved' && c.resolvedAt) {
         const createDate = new Date(c.createdAt);
         const resolveDate = new Date(c.resolvedAt);
@@ -97,6 +102,7 @@ export default function WardAnalytics() {
         }
       }
 
+      // Severity aggregation
       const sev = c.severity || 'Medium';
       if (severityMap[sev] !== undefined) {
         severityMap[sev]++;
@@ -104,12 +110,14 @@ export default function WardAnalytics() {
         severityMap['Medium']++;
       }
 
+      // Daily grouping: YYYY-MM-DD
       const dateStr = new Date(c.createdAt).toLocaleDateString(undefined, {
         month: 'short',
         day: 'numeric'
       });
       dailyMap[dateStr] = (dailyMap[dateStr] || 0) + 1;
 
+      // Department grouping
       let dept = c.department;
       if (!dept || !MUNICIPAL_DEPARTMENTS.includes(dept)) {
         dept = 'Other / Municipal Services';
@@ -123,13 +131,14 @@ export default function WardAnalytics() {
       else if (status === 'Escalated') deptResolvedMap[dept].escalated++;
     });
 
+    // 1. Core Metrics percentages
     const openPercent = total > 0 ? Math.round((openCount / total) * 100) : 0;
     const resolvedPercent = total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
     const escalatedPercent = total > 0 ? Math.round((escalatedCount / total) * 100) : 0;
     
     const avgResolutionDays = resolutionCountWithTime > 0 
       ? Math.round(totalResolutionMs / (1000 * 60 * 60 * 24 * resolutionCountWithTime)) 
-      : 7;
+      : 7; // nominal fallback
 
     setMetrics({
       total,
@@ -142,17 +151,23 @@ export default function WardAnalytics() {
       avgResolutionDays
     });
 
+    // 2. Format timeline data: sort chronologically (since it's a timeseries)
     const timelineArray = Object.keys(dailyMap).map(date => ({
       date,
       count: dailyMap[date]
     }));
+    // Reverse or sort timeline array by date if needed. Recharts handles keys in array order.
+    // For simple telemetry, array order of complaints (reverse createdAt) reversed is correct.
     timelineArray.reverse();
+    // Slice to show last 10 days for cleaner chart presentation
     setDailyTimeline(timelineArray.slice(-12));
 
+    // 3. Format Department leaderboard (Sorted by highest number of resolved complaints)
     const leaderboardArray = Object.values(deptResolvedMap);
     leaderboardArray.sort((a, b) => b.resolved - a.resolved);
     setLeaderboard(leaderboardArray);
 
+    // 4. Format Severity counts for Bar graph
     setSeverityCounts([
       { name: 'High Severity', count: severityMap.High, fill: '#ef4444' },
       { name: 'Medium Severity', count: severityMap.Medium, fill: '#f59e0b' },
@@ -341,6 +356,7 @@ export default function WardAnalytics() {
                   className="p-4 bg-[#0b1329]/40 border border-slate-800/50 rounded-2xl flex items-center justify-between hover:bg-[#0b1329]/60 transition-colors"
                 >
                   <div className="flex items-center gap-3.5">
+                    {/* Medal rank box */}
                     <div className={`w-8 h-8 rounded-lg border font-mono font-bold flex items-center justify-center text-sm ${medalColors[index] || 'text-slate-500 bg-slate-900 border-slate-800'}`}>
                       #{index + 1}
                     </div>
